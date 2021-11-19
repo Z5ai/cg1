@@ -33,7 +33,7 @@ float ComputeSurfaceArea(const HEMesh& m)
             points.push_back(m.point(*cfv_It));
         }
 
-        //pointA = m.point(*cfv_It);
+        pointA = m.point(*cfv_It);
         //pointB = m.point((++cfv_It).handle());
         //pointC = m.point((++cfv_It).handle());
 

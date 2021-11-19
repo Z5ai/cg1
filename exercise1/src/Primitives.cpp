@@ -31,6 +31,8 @@ void CreateCube(HEMesh& mesh)
     vhandles[6] = mesh.add_vertex(OpenMesh::Vec3f( 1.0f, 1.0f, 1.0f));
     vhandles[7] = mesh.add_vertex(OpenMesh::Vec3f(    0, 1.0f, 1.0f));
 
+    //mesh.point(vhandles[1])=mesh.point(vhandles[1]).operator+(mesh.point(vhandles[6]));
+
     mesh.add_face(vhandles[4], vhandles[5], vhandles[6], vhandles[7]);
 
     mesh.add_face(vhandles[3], vhandles[2], vhandles[1], vhandles[0]);
