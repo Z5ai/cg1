@@ -22,6 +22,27 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
 	int nStrips = 0;
 
 	/*Task 1.2.5*/
-	
+
+
+    stripification pseudocode
+    k from the lecture = nTrials
+
+    while(faces with id -1 exist){
+    for(int i = 0; i < nTrials; i++){
+        randomly select a halfedge hi with attribute id -1
+        make a strip out of it, forwards and backwards
+            hi.parity = 0       //give current halfedge parity 0
+            add hi to list of halfedges
+            iterate through halfedges (see slide 14)
+            save them all to list, if not in it already
+            if we find one thats already in the list, break
+        save pointer to that list to "list of lists" (trail list)
+    }
+
+    select longest of the nTrials strips, go with that one
+    assign nStrips to all faces making up the strips
+    nStrips+=1;
+    }
+
 	return nStrips;
 }
