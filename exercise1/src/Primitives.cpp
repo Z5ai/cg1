@@ -18,8 +18,28 @@ void CreateQuad(HEMesh& mesh)
 
 void CreateCube(HEMesh& mesh)
 {
-	mesh.clear();
-	/* Task 1.2.1 */
+    mesh.clear();
+    /* Task 1.2.1 */
+    std::vector<OpenMesh::VertexHandle> vhandles(8);
+    vhandles[0] = mesh.add_vertex(OpenMesh::Vec3f(    0,    0, 0));
+    vhandles[1] = mesh.add_vertex(OpenMesh::Vec3f( 1.0f,    0, 0));
+    vhandles[2] = mesh.add_vertex(OpenMesh::Vec3f( 1.0f, 1.0f, 0));
+    vhandles[3] = mesh.add_vertex(OpenMesh::Vec3f(    0, 1.0f, 0));
+
+    vhandles[4] = mesh.add_vertex(OpenMesh::Vec3f(    0,    0, 1.0f));
+    vhandles[5] = mesh.add_vertex(OpenMesh::Vec3f( 1.0f,    0, 1.0f));
+    vhandles[6] = mesh.add_vertex(OpenMesh::Vec3f( 1.0f, 1.0f, 1.0f));
+    vhandles[7] = mesh.add_vertex(OpenMesh::Vec3f(    0, 1.0f, 1.0f));
+
+    mesh.add_face(vhandles[4], vhandles[5], vhandles[6], vhandles[7]);
+
+    mesh.add_face(vhandles[3], vhandles[2], vhandles[1], vhandles[0]);
+    mesh.add_face(vhandles[1], vhandles[5], vhandles[4], vhandles[0]);
+    mesh.add_face(vhandles[4], vhandles[7], vhandles[3], vhandles[0]);
+
+    mesh.add_face(vhandles[1], vhandles[2], vhandles[6], vhandles[5]);
+    mesh.add_face(vhandles[7], vhandles[6], vhandles[2], vhandles[3]);
+
 }
 
 void CreateTetrahedron(HEMesh& mesh, float a)
