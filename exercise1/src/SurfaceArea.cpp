@@ -6,10 +6,10 @@
 
 #include <iostream>
 
-float triangleArea(OpenMesh::VectorT<float, 3> a, OpenMesh::VectorT<float, 3> b, OpenMesh::VectorT<float, 3> c){
+float triangleArea(std::vector<OpenMesh::Vec3f> points){
     float area = 0;
-    OpenMesh::VectorT<float, 3> ab = { b[0]-a[0], b[1]-a[1], b[2]-a[2]};
-    OpenMesh::VectorT<float, 3> ac = { c[0]-a[0], c[1]-a[1], c[2]-a[2]};
+    OpenMesh::VectorT<float, 3> ab = { points[1][0]-points[0][0], points[1][1]-points[0][1], points[1][2]-points[0][2]};
+    OpenMesh::VectorT<float, 3> ac = { points[2][0]-points[0][0], points[2][1]-points[0][1], points[2][2]-points[0][2]};
 
     area = 0.5 * ab.cross(ac).length();
 
@@ -29,16 +29,16 @@ float ComputeSurfaceArea(const HEMesh& m)
     for (HEMesh::FaceIter face_it=m.faces_begin(); face_it!=m.faces_end(); ++face_it){
 
         cfv_It = m.cfv_iter(*face_it);
-        for (cfv_It = m.cfv_iter(*face_it); cfv_It!=m.cfv_iter(*face_it); (++cfv_It).handle()){
+        for (cfv_It = m.cfv_iter(*face_it); cfv_It.is_valid(); (++cfv_It).handle()){
             points.push_back(m.point(*cfv_It));
         }
 
-        pointA = m.point(*cfv_It);
-        pointB = m.point((++cfv_It).handle());
-        pointC = m.point((++cfv_It).handle());
+        //pointA = m.point(*cfv_It);
+        //pointB = m.point((++cfv_It).handle());
+        //pointC = m.point((++cfv_It).handle());
 
         if(points.size() == 3) {
-            area = area + triangleArea(pointA,pointB,pointC);
+            area = area + triangleArea(points);
         } else {
 
         }
