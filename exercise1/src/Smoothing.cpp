@@ -9,15 +9,16 @@
 void SmoothUniformLaplacian(HEMesh& m, float lambda, unsigned int iterations)
 {
 	/*Task 1.2.4*/
-    for(int index_iterations=0;index_iterations<iterations;index_iterations++)
+    for(unsigned int index_iterations=0; index_iterations<iterations; index_iterations++)
     {
         HEMesh m_read = m; // read on copy m_read, write on original m
 
         for (auto vertex_selected : m_read.vertices()) {
-            int vertexes_in_ring = 0;
+            //int vertexes_in_ring = 0;
 
             OpenMesh::Vec3f vector_sum{0, 0, 0};
             float count_vertexes_in_ring = 0;
+            OpenMesh::Vec3f vertex_new = {0, 0, 0};
 
             // vector_sum is accumulated by vectors from vertex_selected to the vertices of its one-ring
             for (auto vertex_ring: m_read.vv_range(vertex_selected)) {
@@ -25,7 +26,8 @@ void SmoothUniformLaplacian(HEMesh& m, float lambda, unsigned int iterations)
                 vector_sum += (m_read.point(vertex_ring) - m_read.point(vertex_selected));
             }
 
-            OpenMesh::Vec3f vertex_new = m_read.point(vertex_selected) + vector_sum.vectorize(lambda / count_vertexes_in_ring);
+            vertex_new = vector_sum * (lambda / count_vertexes_in_ring) + m_read.point(vertex_selected);
+
             m.point(vertex_selected) = vertex_new;
         }
     }
