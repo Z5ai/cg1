@@ -54,6 +54,8 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
 
             current_he = starting_he;
             //iterate forwards
+            bool valid = true;
+            while(valid){
             switch(mesh.property(perHalfedgeParityProperty, current_he)) {
                 case 0:
                     //current_he = prev(inv(current_he));
@@ -71,6 +73,7 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
                     mesh.property(perHalfedgeParityProperty,current_he) = 0;
                     trial.push_back(current_he);
                     break;
+            }
             }
 
             current_he = starting_he;
