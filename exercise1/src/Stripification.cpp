@@ -5,6 +5,7 @@
 #include "Stripification.h"
 
 #include <random>
+        #include <iostream>
 #include "sample_set.h"
 
 
@@ -164,15 +165,33 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
         } //for over the trials
 
         //remove the faces of the longest strip from the pool of remaining faces
+        std::cout << "About to remove longest strip ";
         OpenMesh::FaceHandle f;
+
         for (OpenMesh::HalfedgeHandle he : trial_max){
             f = mesh.face_handle(he);
-            int i;
+            std::cout << "Found face to remove ";
+            //find the index of f in the vector to then erase it
+    /*      int i;
             for(i = 0; i < remaining_faces.size(); i++){
-                if(f == remaining_faces[i]){ break; }
+                std::cout << " Remaining faces :";
+                std::cout << remaining_faces.size();
+                std::cout << " i: ";
+                std::cout << i;
+                if(f == remaining_faces[i]){
+
+                    break;
+                }
             }
+            mesh.property(perFaceStripIdProperty, f) = nStrips;     //set the Strip ID before removing
+            std::cout << "About to remove face ";
+            remaining_faces.erase(remaining_faces.begin() + i-1);
+            std::cout << "Removed face ";
+            std::cout << i; */
+
             mesh.property(perFaceStripIdProperty, f) = nStrips;
-            remaining_faces.erase(remaining_faces.begin() + i-1);        //erase somehow went out of range
+            remaining_faces.remove(remaining_faces.begin(), remaining_faces.end(), f);
+
         }
 
         //erase all the parities again
@@ -184,8 +203,13 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
 
         //after every found strip, increase the number of strips
         nStrips++;
+        std::cout << "Number of Strips: ";
+        std::cout << nStrips;
+        std::cout << "/n";
+        std::cout << remaining_faces.size();
 
     } //while(!remaining_faces.empty())
+
 
     //stripification pseudocode
     //k from the lecture = nTrials
