@@ -165,32 +165,33 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
         } //for over the trials
 
         //remove the faces of the longest strip from the pool of remaining faces
-        std::cout << "About to remove longest strip ";
         OpenMesh::FaceHandle f;
 
         for (OpenMesh::HalfedgeHandle he : trial_max){
             f = mesh.face_handle(he);
-            std::cout << "Found face to remove ";
             //find the index of f in the vector to then erase it
-    /*      int i;
-            for(i = 0; i < remaining_faces.size(); i++){
+            int index = 0;
+
+            /*for(i = 0; i < remaining_faces.size(); i++){
                 std::cout << " Remaining faces :";
                 std::cout << remaining_faces.size();
                 std::cout << " i: ";
                 std::cout << i;
-                if(f == remaining_faces[i]){
+                if(f == remaining_faces[i]){ break; }
+            }*/
 
-                    break;
-                }
-            }
+            std::vector<OpenMesh::FaceHandle>::iterator it = find(remaining_faces.begin(), remaining_faces.end(), f);
+            index = std::distance(remaining_faces.begin(), it);
+
             mesh.property(perFaceStripIdProperty, f) = nStrips;     //set the Strip ID before removing
-            std::cout << "About to remove face ";
-            remaining_faces.erase(remaining_faces.begin() + i-1);
-            std::cout << "Removed face ";
-            std::cout << i; */
+            if(index == remaining_faces.size()){
+                remaining_faces.pop_back();
+            } else {
+                remaining_faces.erase(it);
+            }
 
-            mesh.property(perFaceStripIdProperty, f) = nStrips;
-            remaining_faces.remove(remaining_faces.begin(), remaining_faces.end(), f);
+            //mesh.property(perFaceStripIdProperty, f) = nStrips;
+            //remove(remaining_faces.begin(), remaining_faces.end(), f);
 
         }
 
@@ -203,10 +204,6 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
 
         //after every found strip, increase the number of strips
         nStrips++;
-        std::cout << "Number of Strips: ";
-        std::cout << nStrips;
-        std::cout << "/n";
-        std::cout << remaining_faces.size();
 
     } //while(!remaining_faces.empty())
 
