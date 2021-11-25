@@ -8,7 +8,15 @@
 #include "sample_set.h"
 
 
-
+bool check (HEMesh& mesh, OpenMesh::HalfedgeHandle h, std::vector<OpenMesh::HalfedgeHandle> trial){
+    if(!mesh.is_valid_handle(h)){
+        return false;
+    }
+    if(find(trial.begin(), trial.end(), h) != trial.end()){
+        return false;
+    }
+    return true;
+}
 
 unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceStripIdProperty, unsigned int nTrials)
 {
@@ -30,18 +38,21 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
     OpenMesh::HalfedgeHandle current_he;
 
     OpenMesh::HPropHandleT<int> perHalfedgeParityProperty;
+    mesh.add_property(perHalfedgeParityProperty);
 
+    //initialize halfedge parities with -1
     for(auto h : mesh.halfedges()) {
         mesh.property(perHalfedgeParityProperty, h) = -1;
     }
 
+    //put all faces of the mesh into a pool of faces
     for(auto f : mesh.faces()){
         remaining_faces.push_back(f);
     }
 
     while(!remaining_faces.empty()){
         trial_max.clear();
-        //grab 20 random faces out of pool
+        //grab 20/nTrials random faces out of pool
         for(int i = 0; i < nTrials; i++) {
             trial.clear();
             std::uniform_int_distribution<> randomNumber{0, static_cast<int>((remaining_faces.size()-1))};
@@ -56,55 +67,125 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
             //iterate forwards
             bool valid = true;
             while(valid){
-            switch(mesh.property(perHalfedgeParityProperty, current_he)) {
-                case 0:
-                    //current_he = prev(inv(current_he));
-                    current_he = mesh.opposite_halfedge_handle(current_he);
-                    current_he = mesh.prev_halfedge_handle(current_he);
-                    //add current to list
-                    mesh.property(perHalfedgeParityProperty,current_he) = 1;
-                    trial.push_back(current_he);
-                    break;
-                case 1:
-                    //current_he = next(inv(current_he));
-                    current_he = mesh.opposite_halfedge_handle(current_he);
-                    current_he = mesh.next_halfedge_handle(current_he);
-                    //add current to list
-                    mesh.property(perHalfedgeParityProperty,current_he) = 0;
-                    trial.push_back(current_he);
-                    break;
-            }
+                switch(mesh.property(perHalfedgeParityProperty, current_he)) {
+                    case 0:
+                        //current_he = prev(inv(current_he));
+                        //first check if this halfedge a) exists and b) is not in our trial list yet
+                        //if either of those conditions are met, the strip ends
+                        if(check(mesh, mesh.opposite_halfedge_handle(current_he), trial)) {
+                                current_he = mesh.opposite_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        if(check(mesh, mesh.prev_halfedge_handle(current_he), trial)) {
+                                current_he = mesh.prev_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+
+                        //add current halfedge to list
+                        mesh.property(perHalfedgeParityProperty,current_he) = 1;
+                        trial.push_back(current_he);
+                        break;
+
+                    case 1:
+                        //current_he = next(inv(current_he));
+                        if(check(mesh, mesh.opposite_halfedge_handle(current_he),trial)) {
+                            current_he = mesh.opposite_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        if(check(mesh, mesh.next_halfedge_handle(current_he), trial)) {
+                            current_he = mesh.next_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+
+                        //add current to list
+                        mesh.property(perHalfedgeParityProperty,current_he) = 0;
+                        trial.push_back(current_he);
+                        break;
+                }
             }
 
             current_he = starting_he;
             //iterate backwards
-            switch(mesh.property(perHalfedgeParityProperty, current_he)) {
-                case 0:
-                    //current_he = prev(inv(current_he));
-                    current_he = mesh.prev_halfedge_handle(current_he);
-                    current_he = mesh.opposite_halfedge_handle(current_he);
-                    //add current to list
-                    mesh.property(perHalfedgeParityProperty,current_he) = 1;
-                    trial.push_back(current_he);
-                    break;
-                case 1:
-                    //current_he = next(inv(current_he));
-                    current_he = mesh.next_halfedge_handle(current_he);
-                    current_he = mesh.opposite_halfedge_handle(current_he);
-                    //add current to list
-                    mesh.property(perHalfedgeParityProperty,current_he) = 0;
-                    trial.push_back(current_he);
-                    break;
+            valid = true;
+            while(valid) {
+                switch (mesh.property(perHalfedgeParityProperty, current_he)) {
+                    case 0:
+                        //current_he = prev(inv(current_he));
+                        if(check(mesh, mesh.prev_halfedge_handle(current_he), trial)) {
+                            current_he = mesh.prev_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        if(check(mesh, mesh.opposite_halfedge_handle(current_he), trial)) {
+                            current_he = mesh.opposite_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        //add current to list
+                        mesh.property(perHalfedgeParityProperty, current_he) = 1;
+                        trial.push_back(current_he);
+                        break;
+
+                    case 1:
+                        //current_he = next(inv(current_he));
+                        if(check(mesh, mesh.next_halfedge_handle(current_he), trial)) {
+                            current_he = mesh.next_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        if(check(mesh, mesh.opposite_halfedge_handle(current_he), trial)) {
+                            current_he = mesh.opposite_halfedge_handle(current_he);
+                        } else {
+                            valid = false;
+                            break;
+                        }
+                        //add current to list
+                        mesh.property(perHalfedgeParityProperty, current_he) = 0;
+                        trial.push_back(current_he);
+                        break;
+                }
+
             }
         if(trial.size() > trial_max.size()) {
             trial_max = trial;
         }
 
+        } //for over the trials
 
-
+        //remove the faces of the longest strip from the pool of remaining faces
+        OpenMesh::FaceHandle f;
+        for (OpenMesh::HalfedgeHandle he : trial_max){
+            f = mesh.face_handle(he);
+            int i;
+            for(i = 0; i < remaining_faces.size(); i++){
+                if(f == remaining_faces[i]){ break; }
+            }
+            mesh.property(perFaceStripIdProperty, f) = nStrips;
+            remaining_faces.erase(remaining_faces.begin() + i-1);        //erase somehow went out of range
         }
 
-    }
+        //erase all the parities again
+        /*for(auto face : remaining_faces) {
+            HEMesh::ConstFaceHalfedgeIter cfh = mesh.cfh_iter(face);
+            OpenMesh::HalfedgeHandle help = *cfh;
+            mesh.property(perHalfedgeParityProperty, help) = -1;
+        }*/
+
+        //after every found strip, increase the number of strips
+        nStrips++;
+
+    } //while(!remaining_faces.empty())
 
     //stripification pseudocode
     //k from the lecture = nTrials
@@ -112,7 +193,7 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
    //while(faces with id -1 exist){
     //for(int i = 0; i < nTrials; i++){
         //randomly select a halfedge hi with attribute id -1
-        make a strip out of it, forwards and backwards
+      /*  make a strip out of it, forwards and backwards
             hi.parity = 0       //give current halfedge parity 0
             add hi to list of halfedges
             iterate through halfedges (see slide 14)
@@ -124,7 +205,7 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
     select longest of the nTrials strips, go with that one
     assign nStrips to all faces making up the strips
     nStrips+=1;
-    }
+    }*/
 
 	return nStrips;
 }
