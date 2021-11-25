@@ -50,7 +50,6 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
 
     //JOB
 	/*Task 1.2.3*/
-    int groups_number_temporary = 0;
     int groups_id = 0;
 
     for (auto f1 : m.faces())
@@ -66,8 +65,6 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
                     if(  (m.property(perFaceShellIndex, f1) == -1)
                        &&(m.property(perFaceShellIndex, f2) == -1))
                     {
-
-                        groups_number_temporary++;
                         groups_id++;
                         m.property(perFaceShellIndex, f1) = groups_id;
                         m.property(perFaceShellIndex, f2) = groups_id;
@@ -75,13 +72,11 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
                     else
                     {
                         if (m.property(perFaceShellIndex, f1) == -1)
-                              m.property(perFaceShellIndex, f1) = m.property(perFaceShellIndex, f2);
-                        else
-                        if (m.property(perFaceShellIndex, f2) == -1)
-                              m.property(perFaceShellIndex, f2) = m.property(perFaceShellIndex, f1);
+                        {
+                            m.property(perFaceShellIndex, f1) = m.property(perFaceShellIndex, f2);
+                        }
                         else
                         {
-
                           int littler_index,replace_index;
                           if(m.property(perFaceShellIndex, f1)<m.property(perFaceShellIndex, f2))
                           {
@@ -102,8 +97,7 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
                                   replacement_exists = true;
                               }
                           }
-                          if(replacement_exists)
-                              groups_number_temporary--;
+
                         }
                     }
                 }
@@ -111,13 +105,11 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
 
                     if(m.property(perFaceShellIndex, f1) == -1)
                     {
-                        groups_number_temporary++;
                         groups_id++;
                         m.property(perFaceShellIndex, f1) = groups_id;
                     }
                     if(m.property(perFaceShellIndex, f2) == -1)
                     {
-                        groups_number_temporary++;
                         groups_id++;
                         m.property(perFaceShellIndex, f2) = groups_id;
                     }
@@ -128,27 +120,30 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
     }
 
     //erase integer gaps, e.g. groups 1 3 4 8 should get 1 2 3 4
-    /*
+
     int groups_number = 0;
-    for(int groups_number_temporary_index = 0; groups_number_temporary_index<groups_number_temporary;groups_number_temporary++)
+    for(int groups_id_index = 1; groups_id_index<=groups_id ;groups_id_index++)
     {
-        bool groups_number_temporary_index_no_gap = false;
+        bool number_exists = false;
         for (auto f : m.faces())
         {
-            if((!groups_number_temporary_index_no_gap)&&(m.property(perFaceShellIndex, f) == groups_number_temporary_index))
+            if(m.property(perFaceShellIndex, f) == groups_id_index)
             {
-                groups_number++;
-                groups_number_temporary_index_no_gap = false;
-            }
-            if(groups_number_temporary_index_no_gap)
+                if(!number_exists)
+                {
+                    groups_number++;
+                    number_exists = true;
+                }
                 m.property(perFaceShellIndex, f) = groups_number;
+            }
+
         }
     }
-    */
+
     //JOB
 
     //POST-CONDTION
-    return c;
+    return groups_number;
     //POST-CONDTION
 }
 
