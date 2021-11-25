@@ -2,8 +2,8 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 
-#include "ShellExtraction.h"
 
+#include "ShellExtraction.h"
 #include <queue>
 
 bool common_edge(OpenMesh::SmartFaceHandle f1,OpenMesh::SmartFaceHandle f2)
@@ -16,7 +16,7 @@ bool common_edge(OpenMesh::SmartFaceHandle f1,OpenMesh::SmartFaceHandle f2)
     bool connected = false;
     for(auto vertice1 : f1.vertices())
     {
-        for(auto vertice2 : f1.vertices())
+        for(auto vertice2 : f2.vertices())
         {
             if(vertice1==vertice2)
             {
@@ -37,8 +37,13 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
 {
     //PRE-CONDITION
 	//reset the shell indices to -1 for every face
+    int c = 0;
+
 	for (auto f : m.faces())
-		m.property(perFaceShellIndex, f) = -1;
+    {
+
+        m.property(perFaceShellIndex, f) = -1;
+    }
     //PRE-CONDITON
 
     //JOB
@@ -50,15 +55,16 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
     {
         for (auto f2 : m.faces())
         {
-            //TEAM-WARNING [BLUME]: unsicher ob das idx ist - ich brauche halt den Parameter nach f1 oder f2,
-            //                      der ne Halbordnung generiert - also die größer/kleiner Operation gestattet
-            if(f1.idx()>f2.idx())
+           if(f1.idx()>f2.idx())
             {
                 if(common_edge(f1,f2))
                 {
+                    //TEAM-WARNING: GENAU DIESE ZEILE UND DIE ART DER ABFRAGE DES WERTES
+                    //              MUSS UNTER DIE LUPE GENOMMEN WERDEN
                     if(  (m.property(perFaceShellIndex, f1) == -1)
                        &&(m.property(perFaceShellIndex, f2) == -1))
                     {
+
                         groups_number_temporary++;
                         groups_id++;
                         m.property(perFaceShellIndex, f1) = groups_id;
@@ -116,9 +122,11 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
                 }
             }
         }
+
     }
 
     //erase integer gaps, e.g. groups 1 3 4 8 should get 1 2 3 4
+    /*
     int groups_number = 0;
     for(int groups_number_temporary_index = 0; groups_number_temporary_index<groups_number_temporary;groups_number_temporary++)
     {
@@ -134,11 +142,11 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
                 m.property(perFaceShellIndex, f) = groups_number;
         }
     }
+    */
     //JOB
 
     //POST-CONDTION
-    if(groups_number_temporary>0) return groups_number_temporary;
-	return -1;
+    return c;
     //POST-CONDTION
 }
 
