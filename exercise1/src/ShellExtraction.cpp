@@ -13,7 +13,7 @@ bool common_edge(OpenMesh::SmartFaceHandle f1,OpenMesh::SmartFaceHandle f2)
     //PRE-CONDITIONS
 
     //JOB
-    bool connected = null;
+    bool connected = false;
     for(auto vertice1 : f1.vertices())
     {
         for(auto vertice2 : f1.vertices())
@@ -24,11 +24,9 @@ bool common_edge(OpenMesh::SmartFaceHandle f1,OpenMesh::SmartFaceHandle f2)
             }
         }
     }
-    if(connected == null) connected = false;
     //JOB
 
     //POST-CONDITIONS
-    if(connected == null)  return false;
     if(connected == false) return false;
     if(connected == true)  return true;
     return false;
@@ -139,7 +137,7 @@ unsigned int ExtractShells(HEMesh& m, OpenMesh::FPropHandleT<int> perFaceShellIn
     //JOB
 
     //POST-CONDTION
-    if(temporary_group>0) return temporary_group;
+    if(groups_number_temporary>0) return groups_number_temporary;
 	return -1;
     //POST-CONDTION
 }
