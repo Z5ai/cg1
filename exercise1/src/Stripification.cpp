@@ -5,7 +5,6 @@
 #include "Stripification.h"
 
 #include <random>
-        #include <iostream>
 #include "sample_set.h"
 
 
@@ -172,15 +171,10 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
             //find the index of f in the vector to then erase it
             int index = 0;
 
-            /*for(i = 0; i < remaining_faces.size(); i++){
-                std::cout << " Remaining faces :";
-                std::cout << remaining_faces.size();
-                std::cout << " i: ";
-                std::cout << i;
-                if(f == remaining_faces[i]){ break; }
-            }*/
 
-            std::vector<OpenMesh::FaceHandle>::iterator it = find(remaining_faces.begin(), remaining_faces.end(), f);
+            if(remaining_faces.size() == 0){ break; }
+
+            auto it = find(remaining_faces.begin(), remaining_faces.end(), f);
             index = std::distance(remaining_faces.begin(), it);
 
             mesh.property(perFaceStripIdProperty, f) = nStrips;     //set the Strip ID before removing
@@ -196,37 +190,21 @@ unsigned int ExtractTriStrips(HEMesh& mesh, OpenMesh::FPropHandleT<int> perFaceS
         }
 
         //erase all the parities again
-        /*for(auto face : remaining_faces) {
+        for(auto face : remaining_faces) {
             HEMesh::ConstFaceHalfedgeIter cfh = mesh.cfh_iter(face);
             OpenMesh::HalfedgeHandle help = *cfh;
             mesh.property(perHalfedgeParityProperty, help) = -1;
-        }*/
+            help = cfh++;
+            mesh.property(perHalfedgeParityProperty, help) = -1;
+            help = cfh++;
+            mesh.property(perHalfedgeParityProperty, help) = -1;
+        }
 
         //after every found strip, increase the number of strips
         nStrips++;
 
     } //while(!remaining_faces.empty())
 
-
-    //stripification pseudocode
-    //k from the lecture = nTrials
-
-   //while(faces with id -1 exist){
-    //for(int i = 0; i < nTrials; i++){
-        //randomly select a halfedge hi with attribute id -1
-      /*  make a strip out of it, forwards and backwards
-            hi.parity = 0       //give current halfedge parity 0
-            add hi to list of halfedges
-            iterate through halfedges (see slide 14)
-            save them all to list, if not in it already
-            if we find one thats already in the list, break
-        save pointer to that list to "list of lists" (trail list)
-    }
-
-    select longest of the nTrials strips, go with that one
-    assign nStrips to all faces making up the strips
-    nStrips+=1;
-    }*/
 
 	return nStrips;
 }
