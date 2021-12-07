@@ -144,11 +144,14 @@ void Viewer::CreateShaders()
     vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
     fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(vertex_shader_id, shader_vert_size, &vertex_content, NULL);
-    glShaderSource(fragment_shader_id, shader_frag_size, &fragment_content, NULL);
+    glShaderSource(vertex_shader_id, 1, &vertex_content, NULL);
+    glShaderSource(fragment_shader_id, 1, &fragment_content, NULL);
 
     glCompileShader(vertex_shader_id);
     glCompileShader(fragment_shader_id);
+
+    CheckShaderCompileStatus(vertex_shader_id, "Vertex Shader");
+    CheckShaderCompileStatus(fragment_shader_id, "Fragment Shader");
 
     glAttachShader(program_id,vertex_shader_id);
     glAttachShader(program_id,fragment_shader_id);
