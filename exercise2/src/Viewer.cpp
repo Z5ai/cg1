@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+#include <OpenMesh/Core/IO/MeshIO.hh>
+
 #include "glsl.h"
 
 Viewer::Viewer()

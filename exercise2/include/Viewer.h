@@ -5,6 +5,7 @@
 #pragma once
 
 #include <gui/AbstractViewer.h>
+#include <util/OpenMeshUtils.h>
 
 class Viewer : public nse::gui::AbstractViewer
 {

@@ -2,12 +2,27 @@
 
 #include <Eigen/Core>
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
+#include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
+#include <OpenMesh/Core/Geometry/EigenVectorT.hh>
 
 #include <gui/GLBuffer.h>
 #include <gui/GLVertexArray.h>
 #include <gui/GLShader.h>
 
-typedef OpenMesh::PolyMesh_ArrayKernelT<>  HEMesh;
+//Eigen interop
+struct EigenTraits : OpenMesh::DefaultTraits {
+	using Point = Eigen::Vector3d;
+	using Normal = Eigen::Vector3d;
+	using TexCoord2D = Eigen::Vector2d;
+};
+
+//Mesh flavors we use
+//- generic polygonal mesh
+typedef OpenMesh::PolyMesh_ArrayKernelT<> HEMesh;
+typedef OpenMesh::PolyMesh_ArrayKernelT<EigenTraits> HEMesh_Eigen;
+//- triangle mesh
+typedef OpenMesh::TriMesh_ArrayKernelT<> HETriMesh;
+typedef OpenMesh::TriMesh_ArrayKernelT<EigenTraits> HETriMesh_Eigen;
 
 //Converts an OpenMesh vector to an Eigen vector 
 static Eigen::Vector3f ToEigenVector(const OpenMesh::Vec3f& v) 
