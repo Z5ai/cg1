@@ -62,6 +62,12 @@ void Viewer::CreateVertexBuffers()
 		1, -1, 0, 1
 	};
 
+    GLfloat colors[] = {
+            255, 0, 0, 1,
+            0, 0, 255, 1,
+            0, 255, 0, 1
+    };
+
 	
 
 	
@@ -94,7 +100,22 @@ void Viewer::CreateVertexBuffers()
 
 
 	/*** End of task 2.2.2 (a) ***/
-	
+    // Generate a position buffer to be appended to the vertex array
+    glGenBuffers(1, &color_buffer_id);
+    // Bind the buffer for subsequent settings
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
+    // Supply the position data
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    // The buffer shall now be linked to the shader attribute
+    // "in_position". First, get the location of this attribute in
+    // the shader program
+    GLuint cid = glGetAttribLocation(program_id, "in_color");
+
+    // Enable this vertex attribute array
+    glEnableVertexAttribArray(cid);
+    // Set the format of the data to match the type of "in_position"
+    int *end = positions.
+    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 0, *int );
 	
 
 	// Unbind the vertex array to leave OpenGL in a clean state
