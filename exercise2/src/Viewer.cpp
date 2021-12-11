@@ -62,6 +62,19 @@ void Viewer::CreateVertexBuffers()
 		1, -1, 0, 1
 	};
 
+    /* Punkte:
+     * A(1,-1,1)
+     * B(-1,-1,-1)
+     * C(1,1,-1)
+     * D(-1,1,1)
+     *
+     * Seiten:
+     * BCA
+     * BAD
+     * ACD
+     * CBD
+     */
+
 
     GLfloat colors[] = {
             1, 0, 0, 1,
@@ -215,7 +228,7 @@ void Viewer::drawContents()
 	// Bind the vertex array 
 	glBindVertexArray(vertex_array_id);
 	// Draw the bound vertex array. Start at element 0 and draw 3 vertices
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 3*4);
 
 	/*** End of task 2.2.4 (b) ***/
 	
