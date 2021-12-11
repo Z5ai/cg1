@@ -57,9 +57,21 @@ void Viewer::CreateVertexBuffers()
 
 	// Define 3 vertices for one face
 	GLfloat positions[] = {
-		0, 1, 0, 1,
-		-1, -1, 0, 1,
-		1, -1, 0, 1
+		-1, -1, -1, 1,
+		-1,  1, -1, 1,
+		 1, -1, 1, 1,
+
+        -1, -1, -1, 1,
+         1, -1,  1, 1,
+        -1,  1,  1, 1,
+
+        1, -1,  1, 1,
+        1,  1, -1, 1,
+        -1, 1,  1, 1,
+
+         1,  1, -1, 1,
+        -1, -1, -1, 1,
+        -1,  1,  1, 1
 	};
 
     /* Punkte:
@@ -78,8 +90,20 @@ void Viewer::CreateVertexBuffers()
 
     GLfloat colors[] = {
             1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+
             0, 1, 0, 1,
-            0, 0, 1, 1
+            0, 1, 0, 1,
+            0, 1, 0, 1,
+
+            0, 0, 1, 1,
+            0, 0, 1, 1,
+            0, 0, 1, 1,
+
+            1, 1, 0, 1,
+            1, 1, 0, 1,
+            1, 1, 0, 1
     };
 
 
@@ -101,7 +125,7 @@ void Viewer::CreateVertexBuffers()
 	// Enable this vertex attribute array
 	glEnableVertexAttribArray(vid);
 	// Set the format of the data to match the type of "in_position"
-	glVertexAttribPointer(vid, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);  // 2.2.2 (a) fifth attribute stride is actualized
+	glVertexAttribPointer(vid, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), 0);  // 2.2.2 (a) fifth attribute stride is actualized
 
 	/*** Begin of task 2.2.2 (a) ***
 	Create another buffer that will store color information. This works nearly
@@ -125,7 +149,7 @@ void Viewer::CreateVertexBuffers()
     // Enable this vertex attribute array
     glEnableVertexAttribArray(cid);
     // Set the format of the data to match the type of "in_color"
-    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
+    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
 
     /*** End of task 2.2.2 (a) ***/
 
