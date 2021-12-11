@@ -58,7 +58,7 @@ void Viewer::CreateVertexBuffers()
 	// Define 3 vertices for one face
 	GLfloat positions[] = {
 		-1, -1, -1, 1,
-		-1,  1, -1, 1,
+		 1,  1, -1, 1,
 		 1, -1, 1, 1,
 
         -1, -1, -1, 1,
@@ -248,6 +248,14 @@ void Viewer::drawContents()
 	First, find the location of these variables using glGetUniformLocation and
 	then set them with the command glUniformMatrix4fv. 
 	*/
+
+    GLint model_location;
+    GLint projection_location;
+
+    model_location = glGetUniformLocation(program_id, "modelViewMatrix");
+    projection_location = glGetUniformLocation(program_id, "projectionMatrix");
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, modelViewMatrix.data());
+    glUniformMatrix4fv(projection_location, 1, GL_FALSE, projectionMatrix.data());
 
 	// Bind the vertex array 
 	glBindVertexArray(vertex_array_id);
