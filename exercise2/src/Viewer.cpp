@@ -252,10 +252,18 @@ void Viewer::drawContents()
     GLint model_location;
     GLint projection_location;
 
+    GLint juliaC_location;
+    GLint juliaZoom_location;
+
     model_location = glGetUniformLocation(program_id, "modelViewMatrix");
     projection_location = glGetUniformLocation(program_id, "projectionMatrix");
     glUniformMatrix4fv(model_location, 1, GL_FALSE, modelViewMatrix.data());
     glUniformMatrix4fv(projection_location, 1, GL_FALSE, projectionMatrix.data());
+
+    juliaC_location = glGetUniformLocation(program_id, "c");
+    juliaZoom_location = glGetUniformLocation(program_id, "m");
+    glUniform2fv(juliaC_location, 1, juliaC.data());
+    glUniform1f(juliaZoom_location, juliaZoom);
 
 	// Bind the vertex array 
 	glBindVertexArray(vertex_array_id);

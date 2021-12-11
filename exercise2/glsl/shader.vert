@@ -6,6 +6,7 @@
 in vec4 in_position;
 in vec4 in_color;          // 2.2.2 (b)
 out vec4 fragment_color;
+out vec4 out_position;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -15,6 +16,7 @@ void main(void)
 {
 	gl_Position = projectionMatrix * (modelViewMatrix * in_position);
 	fragment_color = in_color;   // 2.2.2 (b)
+	out_position = in_position;
 
 	/* - 2.2.2 (b)
 	 * Declare a new "in" variable with the name "in_color". Instead of setting
