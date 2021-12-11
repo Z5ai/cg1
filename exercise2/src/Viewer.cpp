@@ -61,17 +61,6 @@ void Viewer::CreateVertexBuffers()
 		-1, -1, 0, 1,
 		1, -1, 0, 1
 	};
-
-    GLfloat colors[] = {
-            255, 0, 0, 1,
-            0, 0, 255, 1,
-            0, 255, 0, 1
-    };
-
-	
-
-	
-
 	// Generate the vertex array 
 	glGenVertexArrays(1, &vertex_array_id);
 	glBindVertexArray(vertex_array_id);
@@ -96,30 +85,37 @@ void Viewer::CreateVertexBuffers()
 	Create another buffer that will store color information. This works nearly
 	similar to the code above that creates the position buffer. Store the buffer
 	id into the variable "color_buffer_id" and bind the color buffer to the
-	shader variable "in_color".
+	shader variable "in_color".*/
+
+    GLfloat colors[] = {
+            255, 0, 0, 1,
+            0, 0, 255, 1,
+            0, 255, 0, 1
+    };
 
 
-	/*** End of task 2.2.2 (a) ***/
-    // Generate a position buffer to be appended to the vertex array
+    // Generate a color buffer object name. opengl can store the generated buffer object name (can be any int. e.g.: 1) in color_buffer_id.
     glGenBuffers(1, &color_buffer_id);
-    // Bind the buffer for subsequent settings
+    // Bind the target GL_ARRAY_BUFFER to the buffer with the name color_buffer_id. If no buffer for the color_buffer_id exists yet, one is created.
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
-    // Supply the position data
+    // Supply the color data
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
     // The buffer shall now be linked to the shader attribute
-    // "in_position". First, get the location of this attribute in
+    // "in_color". First, get the location of this attribute in
     // the shader program
     GLuint cid = glGetAttribLocation(program_id, "in_color");
 
     // Enable this vertex attribute array
     glEnableVertexAttribArray(cid);
-    // Set the format of the data to match the type of "in_position"
-    int *end = positions.
-    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 0, *int );
-	
+    // Set the format of the data to match the type of "in_color"
+    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(positions));
+
+    /*** End of task 2.2.2 (a) ***/
+
 
 	// Unbind the vertex array to leave OpenGL in a clean state
 	glBindVertexArray(0);
+
 }
 
 //Checks if the given shader has been compiled successfully. Otherwise, prints an
@@ -150,7 +146,7 @@ void Viewer::CreateShaders()
 	std::string fs((char*)shader_frag, shader_frag_size);
 	const char *fragment_content = fs.c_str();
 
-	/*** Begin of task 2.2.1 ***
+	/*** Begin of task 2.2.1
 	Use the appropriate OpenGL commands to create a shader object for
 	the vertex shader, set the source code and let it compile. Store the
 	ID of this shader object in the variable "vertex_shader_id". Repeat
