@@ -61,6 +61,15 @@ void Viewer::CreateVertexBuffers()
 		-1, -1, 0, 1,
 		1, -1, 0, 1
 	};
+
+
+    GLfloat colors[] = {
+            1, 0, 0, 1,
+            0, 0, 1, 1,
+            0, 1, 0, 1
+    };
+
+
 	// Generate the vertex array 
 	glGenVertexArrays(1, &vertex_array_id);
 	glBindVertexArray(vertex_array_id);
@@ -79,7 +88,7 @@ void Viewer::CreateVertexBuffers()
 	// Enable this vertex attribute array
 	glEnableVertexAttribArray(vid);
 	// Set the format of the data to match the type of "in_position"
-	glVertexAttribPointer(vid, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(vid, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);  // 2.2.2 (a) fifth attribute stride is actualized
 
 	/*** Begin of task 2.2.2 (a) ***
 	Create another buffer that will store color information. This works nearly
@@ -87,11 +96,6 @@ void Viewer::CreateVertexBuffers()
 	id into the variable "color_buffer_id" and bind the color buffer to the
 	shader variable "in_color".*/
 
-    GLfloat colors[] = {
-            255, 0, 0, 1,
-            0, 0, 255, 1,
-            0, 255, 0, 1
-    };
 
 
     // Generate a color buffer object name. opengl can store the generated buffer object name (can be any int. e.g.: 1) in color_buffer_id.
@@ -108,7 +112,7 @@ void Viewer::CreateVertexBuffers()
     // Enable this vertex attribute array
     glEnableVertexAttribArray(cid);
     // Set the format of the data to match the type of "in_color"
-    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(positions));
+    glVertexAttribPointer(cid, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
 
     /*** End of task 2.2.2 (a) ***/
 
