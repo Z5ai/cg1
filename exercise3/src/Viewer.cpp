@@ -36,7 +36,7 @@ Viewer::Viewer()
 	camera().FocusOnPoint(0.5f * Eigen::Vector3f(PATCH_SIZE - 1, 15, PATCH_SIZE - 1));	
 	camera().Zoom(-30);
 	camera().RotateAroundFocusPointLocal(Eigen::AngleAxisf(-0.5f, Eigen::Vector3f::UnitY()) * Eigen::AngleAxisf(-0.05f, Eigen::Vector3f::UnitX()));
-	camera().FixClippingPlanes(0.1, 1000);
+	camera().FixClippingPlanes(0.1f, 1000.f);
 }
 
 bool Viewer::resizeEvent(const Eigen::Vector2i&)
@@ -65,7 +65,7 @@ GLuint CreateTexture(const unsigned char* fileData, size_t fileLength, bool repe
 {
 	GLuint textureName;
 	int textureWidth, textureHeight, textureChannels;
-	auto pixelData = stbi_load_from_memory(fileData, fileLength, &textureWidth, &textureHeight, &textureChannels, 3);
+	auto pixelData = stbi_load_from_memory(fileData, (int)fileLength, &textureWidth, &textureHeight, &textureChannels, 3);
 	textureName = 0;
 	stbi_image_free(pixelData);
 	return textureName;
@@ -88,7 +88,7 @@ void Viewer::CreateGeometry()
 
 	terrainShader.bind();
 	terrainPositions.uploadData(positions).bindToAttribute("position");
-	terrainIndices.uploadData(indices.size() * sizeof(uint32_t), indices.data());
+	terrainIndices.uploadData((uint32_t)indices.size() * sizeof(uint32_t), indices.data());
 
 	
 
@@ -137,7 +137,7 @@ void CalculateViewFrustum(const Eigen::Matrix4f& mvp, Eigen::Vector4f* frustumPl
 		for(int y = -1; y <= 1; y += 2)
 			for (int z = -1; z <= 1; z += 2)
 	{
-		Eigen::Vector4f corner = invMvp * Eigen::Vector4f(x, y, z, 1);
+		Eigen::Vector4f corner = invMvp * Eigen::Vector4f((float)x, (float)y, (float)z, 1);
 		corner /= corner.w();
 		bbox.expand(corner.head<3>());
 	}
@@ -179,7 +179,7 @@ void Viewer::drawContents()
 	
 
 	//Render text
-	nvgBeginFrame(mNVGContext, width(), height(), mPixelRatio);
+	nvgBeginFrame(mNVGContext, (float)width(), (float)height(), mPixelRatio);
 	std::string text = "Patches visible: " + std::to_string(visiblePatches);
 	nvgText(mNVGContext, 10, 20, text.c_str(), nullptr);
 	nvgEndFrame(mNVGContext);
