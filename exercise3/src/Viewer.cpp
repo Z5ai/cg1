@@ -53,10 +53,6 @@ bool Viewer::resizeEvent(const Eigen::Vector2i&)
 		std::cout << "Warning: Background framebuffer is not complete: " << fboStatus << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
-    glBindTexture(GL_TEXTURE_2D, grassTexture);
-    terrainShader.setUniform("grass", grassTexture);
-
 	return false;
 }
 
@@ -208,6 +204,10 @@ void Viewer::drawContents()
 	terrainShader.setUniform("mvp", mvp);
 	terrainShader.setUniform("cameraPos", cameraPosition, false);
 	/* Task: Render the terrain */
+
+
+    glBindTexture(GL_TEXTURE_2D, grassTexture);
+    terrainShader.setUniform("grass", GL_TEXTURE_2D);
 
 
     glPrimitiveRestartIndex(RESTART_INDEX);
