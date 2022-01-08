@@ -18,6 +18,7 @@
 #include "textures.h"
 
 const uint32_t PATCH_SIZE = 256; //number of vertices along one side of the terrain patch
+const uint32_t RESTART_INDEX = PATCH_SIZE * PATCH_SIZE;
 
 Viewer::Viewer()
 	: AbstractViewer("CG1 Exercise 3"),
@@ -86,13 +87,13 @@ void Viewer::CreateGeometry()
 	/*Generate positions and indices for a terrain patch with a
 	  single triangle strip */
 
-    for(int i = 0; i < 4; i++){        //this is for the little test square, put PATCH_SIZE instead of 4
-        for(int j = 0; j < 4; j++){
+    for(int i = 0; i < PATCH_SIZE; i++){        //this is for the little test square, put PATCH_SIZE instead of 4
+        for(int j = 0; j < PATCH_SIZE; j++){
             Eigen::Vector4f pos = {(float)j,1,(float)i,1};
             positions.push_back(pos);
         }
     }
-    indices.push_back(0);
+    /*indices.push_back(0);
     indices.push_back(4);
     indices.push_back(1);
     indices.push_back(5);
@@ -117,17 +118,17 @@ void Viewer::CreateGeometry()
     indices.push_back(10);
     indices.push_back(14);
     indices.push_back(11);
-    indices.push_back(15);
+    indices.push_back(15);*/
 
-    /* not super sure about the indices yet but could be something like
-    for(int i = 0; i < PATCH_SIZE-1; i++){    //you need one row less because you cover two rows at a time
-        for(int j = 0; i < PATCH_SIZE; j++){
-            indices.push_back(j);
-            indices.push_back(j+PATCH_SIZE);
+    // not super sure about the indices yet but could be something like
+    for(int row = 0; row < PATCH_SIZE-1; row++){    //you need one row less because you cover two rows at a time
+        for(int i = 0; i < PATCH_SIZE; i++){
+            indices.push_back(row*PATCH_SIZE + i);
+            indices.push_back(row*PATCH_SIZE + i + PATCH_SIZE);
         }
         indices.push_back(RESTART_INDEX);   //every 2*PATCH_SIZE steps you insert the restart index, this should hold up then? (gotta look up how exactly to address the restart index though)
      }
-     */
+    indices.pop_back();
 
 	terrainShader.bind();
 	terrainPositions.uploadData(positions).bindToAttribute("position");
@@ -220,10 +221,10 @@ void Viewer::drawContents()
 	/* Task: Render the terrain */
 
 
-    glPrimitiveRestartIndex(16);
+    glPrimitiveRestartIndex(RESTART_INDEX);
     glEnable(GL_PRIMITIVE_RESTART);
-//sizeof(terrainIndices)-2 - PATCH_SIZE-2 triangles? (instead of the 18)
-    glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLE_STRIP, 2*PATCH_SIZE*(PATCH_SIZE-1)+PATCH_SIZE-2, GL_UNSIGNED_INT, 0);
+
 	
 
 	//Render text
