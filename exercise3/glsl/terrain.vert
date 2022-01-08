@@ -5,6 +5,7 @@
 
 in vec4 position;
 
+out vec3 normal;
 
 
 uniform mat4 mvp;
@@ -20,6 +21,23 @@ void main()
     vec2 p = vec2(position.x, position.z);
     temp_position.y = getTerrainHeight(p);
 	gl_Position = mvp * temp_position;
+
+	vec3 x0 = vec3(temp_position.x-1, temp_position.y, temp_position.z);
+	vec3 x2 = vec3(temp_position.x+1, temp_position.y, temp_position.z);
+
+	vec3 z0 = vec3(temp_position.x, temp_position.y, temp_position.z-1);
+	vec3 z2 = vec3(temp_position.x, temp_position.y, temp_position.z+1);
+
+	x0.y = getTerrainHeight(vec2(x0.x,x0.z));
+    x2.y = getTerrainHeight(vec2(x2.x,x2.z));
+    z0.y = getTerrainHeight(vec2(z0.x,z0.z));
+    z2.y = getTerrainHeight(vec2(z2.x,z2.z));
+
+    vec3 xx = vec3(x0.x - x2.x, x0.y - x2.y, x0.z - x2.z);
+    vec3 zz = vec3(z0.x - z2.x, z0.y - z2.y, z0.z - z2.z);
+
+    normal = normalize(cross(xx,zz));
+
 }
 
 //source: https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83

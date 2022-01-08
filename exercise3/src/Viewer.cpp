@@ -87,38 +87,12 @@ void Viewer::CreateGeometry()
 	/*Generate positions and indices for a terrain patch with a
 	  single triangle strip */
 
-    for(int i = 0; i < PATCH_SIZE; i++){        //this is for the little test square, put PATCH_SIZE instead of 4
+    for(int i = 0; i < PATCH_SIZE; i++){
         for(int j = 0; j < PATCH_SIZE; j++){
-            Eigen::Vector4f pos = {(float)j,1,(float)i,1};
+            Eigen::Vector4f pos = {(float)j,0,(float)i,1};
             positions.push_back(pos);
         }
     }
-    /*indices.push_back(0);
-    indices.push_back(4);
-    indices.push_back(1);
-    indices.push_back(5);
-    indices.push_back(2);
-    indices.push_back(6);
-    indices.push_back(3);
-    indices.push_back(7);
-    indices.push_back(16);
-    indices.push_back(4);
-    indices.push_back(8);
-    indices.push_back(5);
-    indices.push_back(9);
-    indices.push_back(6);
-    indices.push_back(10);
-    indices.push_back(7);
-    indices.push_back(11);
-    indices.push_back(16);
-    indices.push_back(8);
-    indices.push_back(12);
-    indices.push_back(9);
-    indices.push_back(13);
-    indices.push_back(10);
-    indices.push_back(14);
-    indices.push_back(11);
-    indices.push_back(15);*/
 
     // not super sure about the indices yet but could be something like
     for(int row = 0; row < PATCH_SIZE-1; row++){    //you need one row less because you cover two rows at a time

@@ -3,7 +3,7 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 
-
+in vec3 normal;
 
 out vec4 color;
 
@@ -33,7 +33,7 @@ vec4 getBackgroundColor()
 void main()
 {
 	//surface geometry
-	vec3 n = vec3(0, 1, 0);
+	vec3 n = normalize(-1 * normal);                   //vec3(0, 1, 0);
 	vec3 dirToViewer = vec3(0, 1, 0);
 
 	//material properties	
