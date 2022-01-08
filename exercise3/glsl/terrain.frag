@@ -12,6 +12,7 @@ uniform vec3 cameraPos;
 
 uniform sampler2D background;
 uniform vec2 screenSize;
+uniform sampler2D grass;
 
 const vec3 dirToLight = normalize(vec3(1, 3, 1));	
 

@@ -53,6 +53,10 @@ bool Viewer::resizeEvent(const Eigen::Vector2i&)
 		std::cout << "Warning: Background framebuffer is not complete: " << fboStatus << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+    glBindTexture(GL_TEXTURE_2D, grassTexture);
+    terrainShader.setUniform("grass", grassTexture);
+
 	return false;
 }
 
@@ -67,9 +71,20 @@ GLuint CreateTexture(const unsigned char* fileData, size_t fileLength, bool repe
 	GLuint textureName;
 	int textureWidth, textureHeight, textureChannels;
 	auto pixelData = stbi_load_from_memory(fileData, (int)fileLength, &textureWidth, &textureHeight, &textureChannels, 3);
-	textureName = 0;
-	stbi_image_free(pixelData);
-	return textureName;
+    //textureName = 0;
+
+    glGenTextures(1, &textureName);
+    glBindTexture(GL_TEXTURE_2D, textureName);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(pixelData);
+
+    return textureName;
 }
 
 void Viewer::CreateGeometry()
