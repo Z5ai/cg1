@@ -16,7 +16,10 @@ float getTerrainHeight(vec2 p);
 
 void main()
 {
-	gl_Position = mvp * position;
+    vec4 temp_position = position;
+    vec2 p = vec2(position.x, position.z);
+    temp_position.y = getTerrainHeight(p);
+	gl_Position = mvp * temp_position;
 }
 
 //source: https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
