@@ -4,6 +4,8 @@
 
 #include "LineSegment.h"
 #include "GridUtils.h"
+#include <iostream>
+using namespace std;
 
 
 //default constructor
@@ -92,12 +94,30 @@ bool LineSegment::Overlaps(const Box& b) const
 				   
 }
 
-//returns the point with smallest distance topoint p which lies on the line segment
+//returns the point with smallest distance to point p which lies on the line segment
 Eigen::Vector3f LineSegment::ClosestPoint(const Eigen::Vector3f& p) const
 {
 	//the two endpoints of the line segment are v0,v1
 	/* Task 4.2.1 */
-	return Eigen::Vector3f(0,0,0);
+
+    float vox = v0.x();
+    float voy = v0.y();
+    float voz = v0.z();
+
+    Eigen::Vector3f vv = Eigen::Vector3f(v1.x()-vox, v1.y()-voy, v1.z()-voz);
+
+    float vvx = vv.x();
+    float vvy = vv.y();
+    float vvz = vv.z();
+
+    //float r = - vvx*p.x() + vvx*vox - vvy*p.y() + vvy*voy - vvz*p.z() + vvz*voz;
+    float r = (- vvx*(p.x() - vox) - vvy*(p.y() - voy) - vvz*(p.z() - voz)) / (vvx*vvx + vvy*vvy + vvz*vvz);
+
+    float fx = vox + vvx * r;
+    float fy = voy + vvy * r;
+    float fz = voz + vvz * r;
+
+	return Eigen::Vector3f(fx,fy,fz);;
 }
 
 //returns the squared distance between point p and the line segment

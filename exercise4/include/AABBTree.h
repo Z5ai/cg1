@@ -398,7 +398,57 @@ public:
 		if(root == nullptr)
 			return ResultEntry();
 		/* Task 4.2.1 */
-		return ClosestPrimitiveLinearSearch(q);	
+                //return ClosestPrimitiveLinearSearch(q);
+        std::priority_queue<SearchEntry> qmin;
+        ResultEntry res;
+
+        ///////////
+        const AABBSplitNode *r;
+        r = static_cast<const AABBSplitNode *>(root);
+        qmin.push(SearchEntry(r->GetBounds().SqrDistance(q), r));
+
+        //////////
+
+        while(!qmin.empty()) {
+            const AABBNode *n = (qmin.top().node);
+            float d = n->GetBounds().SqrDistance(q);
+            qmin.pop();
+
+            if (d > res.sqrDistance) {
+                break;
+            }
+
+            while (!n->IsLeaf()) {
+                const auto *nonLeaf = static_cast<const AABBSplitNode *>(n);
+                float dl = nonLeaf->Left()->GetBounds().SqrDistance(q);
+                float dr = nonLeaf->Right()->GetBounds().SqrDistance(q);
+                if (dl < dr) {
+                    qmin.push(SearchEntry(dr, nonLeaf->Right()));
+                    n = nonLeaf->Left();
+                } else {
+                    qmin.push(SearchEntry(dl, nonLeaf->Left()));
+                    n = nonLeaf->Right();
+                }
+            }
+            const auto *leaf = static_cast<const AABBLeafNode *>(n);
+
+
+            auto lend = leaf->end();
+            auto best = leaf->begin();
+            float best_dist = best->SqrDistance(q);
+            for (auto lit = leaf->begin(); lit != lend; ++lit) {
+                if (lit->SqrDistance(q) < best_dist) {
+                    best = lit;
+                    best_dist = best->SqrDistance(q);
+                }
+            }
+            res.sqrDistance = best_dist;
+            res.prim = &(*best);
+            
+        }
+
+		return res;
+
 	}
 
 	//return the closest point position on the closest primitive in the tree with respect to the query point q
