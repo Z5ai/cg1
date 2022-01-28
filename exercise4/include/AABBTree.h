@@ -416,8 +416,6 @@ public:
         ///////////
         const AABBSplitNode *r;
         r = static_cast<const AABBSplitNode *>(root);
-        //qmin.push(SearchEntry(r->GetBounds().SqrDistance(q), r));
-
 
         if(r->IsLeaf()){
             return ResultEntry();
@@ -434,13 +432,15 @@ public:
         }
         //////////
 
+        const AABBLeafNode *leaf;
+
         while(!qmin.empty()) {
             const AABBNode *n = (qmin.top().node);
             float d = n->GetBounds().SqrDistance(q);
             qmin.pop();
 
             if (d > res.sqrDistance) {
-                continue;
+                break;
             }
 
             while (!n->IsLeaf()) {
@@ -450,27 +450,30 @@ public:
                 if (dl < dr) {
                     qmin.push(SearchEntry(dr, nonLeaf->Right()));
                     n = nonLeaf->Left();
+                    res.sqrDistance = dl;
                 } else {
                     qmin.push(SearchEntry(dl, nonLeaf->Left()));
                     n = nonLeaf->Right();
+                    res.sqrDistance = dr;
                 }
             }
-            const auto *leaf = static_cast<const AABBLeafNode *>(n);
-
-
-            auto lend = leaf->end();
-            auto best = leaf->begin();
-            float best_dist = best->SqrDistance(q);
-            for (auto lit = leaf->begin(); lit != lend; ++lit) {
-                if (lit->SqrDistance(q) < best_dist) {
-                    best = lit;
-                    best_dist = best->SqrDistance(q);
-                }
-            }
-            res.sqrDistance = best_dist;
-            res.prim = &(*best);
-            
+            leaf = static_cast<const AABBLeafNode *>(n);
         }
+
+
+        auto lend = leaf->end();
+        auto best = leaf->begin();
+        float best_dist = best->SqrDistance(q);
+        for (auto lit = leaf->begin(); lit != lend; ++lit) {
+            if (lit->SqrDistance(q) < best_dist) {
+                best = lit;
+                best_dist = best->SqrDistance(q);
+            }
+        }
+        res.sqrDistance = best_dist;
+        res.prim = &(*best);
+            
+
 
 		return res;
 
