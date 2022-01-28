@@ -390,7 +390,17 @@ public:
 		return ClosestKPrimitivesLinearSearch(k,q);
 		//student end
 	}
-	
+
+
+    class CompareDistance
+    {
+    public:
+        bool operator()(SearchEntry &p1, SearchEntry &p2)
+        {
+            return p1.sqrDistance > p2.sqrDistance;
+        }
+    };
+
 	//returns the closest primitive and its squared distance to the point q
 	ResultEntry ClosestPrimitive(const Eigen::Vector3f& q) const
 	{
@@ -399,14 +409,29 @@ public:
 			return ResultEntry();
 		/* Task 4.2.1 */
                 //return ClosestPrimitiveLinearSearch(q);
-        std::priority_queue<SearchEntry> qmin;
+
+        std::priority_queue<SearchEntry, std::vector<SearchEntry>, CompareDistance> qmin;
         ResultEntry res;
 
         ///////////
         const AABBSplitNode *r;
         r = static_cast<const AABBSplitNode *>(root);
-        qmin.push(SearchEntry(r->GetBounds().SqrDistance(q), r));
+        //qmin.push(SearchEntry(r->GetBounds().SqrDistance(q), r));
 
+
+        if(r->IsLeaf()){
+            return ResultEntry();
+        } else {
+            float dl = r->Left()->GetBounds().SqrDistance(q);
+            float dr = r->Right()->GetBounds().SqrDistance(q);
+            if(dl < dr) {
+                res.sqrDistance = dl;
+            } else {
+                res.sqrDistance = dr;
+            }
+            qmin.push(SearchEntry(dl, r->Left()));
+            qmin.push(SearchEntry(dr, r->Right()));
+        }
         //////////
 
         while(!qmin.empty()) {
@@ -415,7 +440,7 @@ public:
             qmin.pop();
 
             if (d > res.sqrDistance) {
-                break;
+                continue;
             }
 
             while (!n->IsLeaf()) {
