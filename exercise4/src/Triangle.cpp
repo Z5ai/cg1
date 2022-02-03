@@ -5,6 +5,7 @@
 #include "Triangle.h"
 #include "GridUtils.h"
 #include <tuple>
+#include <cstdlib>
 
 
 //default constructor
@@ -29,7 +30,21 @@ Triangle::Triangle(const HEMesh&m, const OpenMesh::FaceHandle& f):h(f)
 Box Triangle::ComputeBounds() const
 {
 	/* Task 4.2.2 */
-	Box b;		
+	//Box b;
+
+    float minx = fmin(fmin(v0.x(), v1.x()), v2.x());
+    float miny = fmin(fmin(v0.y(), v1.y()), v2.y());
+    float minz = fmin(fmin(v0.z(), v1.z()), v2.z());
+
+    float maxx = fmax(fmax(v0.x(), v1.x()), v2.x());
+    float maxy = fmax(fmax(v0.y(), v1.y()), v2.y());
+    float maxz = fmax(fmax(v0.z(), v1.z()), v2.z());
+
+    Eigen::Matrix<float, 3, 1> lbound = Eigen::Vector3f(minx, miny, minz);
+    Eigen::Matrix<float, 3, 1> ubound = Eigen::Vector3f(maxx, maxy, maxz);
+
+    Box b = Box(lbound, ubound);
+
 	return b;
 }
 

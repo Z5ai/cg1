@@ -8,6 +8,7 @@
 #include <utility>
 
 #include <util/OpenMeshUtils.h>
+#include <iostream>
 #include "Box.h"
 #include "Triangle.h"
 #include "LineSegment.h"
@@ -391,7 +392,7 @@ public:
 		//student end
 	}
 
-
+    //Operator to reverse the priority queue order
     class CompareDistance
     {
     public:
@@ -414,18 +415,20 @@ public:
         ResultEntry res;
 
         ///////////
+        float current_best_dist = 0;
         const AABBSplitNode *r;
         r = static_cast<const AABBSplitNode *>(root);
 
+        //evaluate both subtrees of root, sort them into qmin and use the shorter distance to compare against
         if(r->IsLeaf()){
             return ResultEntry();
         } else {
             float dl = r->Left()->GetBounds().SqrDistance(q);
             float dr = r->Right()->GetBounds().SqrDistance(q);
             if(dl < dr) {
-                res.sqrDistance = dl;
+                current_best_dist = dl;
             } else {
-                res.sqrDistance = dr;
+                current_best_dist = dr;
             }
             qmin.push(SearchEntry(dl, r->Left()));
             qmin.push(SearchEntry(dr, r->Right()));
@@ -435,14 +438,19 @@ public:
         const AABBLeafNode *leaf;
 
         while(!qmin.empty()) {
+            //retrieve first queue element (the so far closest one)
             const AABBNode *n = (qmin.top().node);
             float d = n->GetBounds().SqrDistance(q);
             qmin.pop();
 
-            if (d > res.sqrDistance) {
-                break;
+            //if the subtree bounding box is already further away than the current optimum, discard
+            //this mainly helps when the optimum was already found, but qmin is still full of less ideal entries
+            if (d > current_best_dist) {
+                continue;
             }
 
+            //evaluate which subtree is closer and continue iterating with that one
+            //save the other subtree in qmin
             while (!n->IsLeaf()) {
                 const auto *nonLeaf = static_cast<const AABBSplitNode *>(n);
                 float dl = nonLeaf->Left()->GetBounds().SqrDistance(q);
@@ -450,29 +458,32 @@ public:
                 if (dl < dr) {
                     qmin.push(SearchEntry(dr, nonLeaf->Right()));
                     n = nonLeaf->Left();
-                    res.sqrDistance = dl;
+                    current_best_dist = dl;
                 } else {
                     qmin.push(SearchEntry(dl, nonLeaf->Left()));
                     n = nonLeaf->Right();
-                    res.sqrDistance = dr;
+                    current_best_dist = dr;
                 }
             }
             leaf = static_cast<const AABBLeafNode *>(n);
-        }
+            //}
 
+            //qmin is now empty and we have found the leaf closest to q
+            //iterate through the leaf's list of primitives and find the closest one
+            auto lend = leaf->end();
+            auto best = leaf->begin();
+            //float best_dist = best->SqrDistance(q);
 
-        auto lend = leaf->end();
-        auto best = leaf->begin();
-        float best_dist = best->SqrDistance(q);
-        for (auto lit = leaf->begin(); lit != lend; ++lit) {
-            if (lit->SqrDistance(q) < best_dist) {
-                best = lit;
-                best_dist = best->SqrDistance(q);
+            for (auto lit = leaf->begin(); lit != lend; ++lit) {
+                if (lit->SqrDistance(q) < current_best_dist) {
+                    best = lit;
+                    current_best_dist = best->SqrDistance(q);
+                }
             }
+
+            res.sqrDistance = best->SqrDistance(q);
+            res.prim = &(*best);
         }
-        res.sqrDistance = best_dist;
-        res.prim = &(*best);
-            
 
 
 		return res;
